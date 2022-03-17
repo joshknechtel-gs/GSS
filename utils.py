@@ -330,3 +330,47 @@ def PercentContrRisk(Cov,w):
     mcr = MargContrRisk(Cov,w)
     cr = w.T.dot(mcr)
     return cr
+#########################################################  
+def SectorByFactorCharts(file,fund):
+    path = "Z:/Shared/Risk Management and Investment Technology/Equity Risk Modeling/"
+    #file = 'ONGSINTL Sector by Factor 03-17-22.xlsx'
+    sxf_df = pd.read_excel(path+file,skiprows=3,skipfooter=3)
+
+    for sector in sxf_df['Filter Level 2'].unique():
+
+        if str(sector) == 'nan':
+            continue
+
+        mask = (sxf_df['Filter Level 2']==sector)\
+                                  &(sxf_df['Level']==0)&(sxf_df['Filter Level 3']=='STYLE')
+
+        labels = sxf_df.loc[mask,' Title'].tolist()
+        factor_exp = sxf_df.loc[mask,'Active']
+        risk_contr = sxf_df.loc[mask,'Active (bp).1']
+
+        x = np.arange(len(labels))  # the label locations
+        width = 0.35  # the width of the bars
+
+        fig, ax = plt.subplots(figsize=(20,10))
+        ax2 = ax.twinx() 
+
+        rects1 = ax.bar(x - width/2, factor_exp, width, label='Active Factor Exposure')
+        rects2 = ax2.bar(x + width/2, risk_contr, width, label='Active Risk Contribution (bps right)', color='red',)
+
+        ax.set_title(fund+': Style Factors within ' +sector,fontsize=25);
+
+        ax.set_xticks(x);
+        ax.set_xticklabels(labels, rotation='vertical');
+        #ax.legend();
+        fig.legend(loc="upper right", bbox_to_anchor=(1,1), bbox_transform=ax.transAxes)
+
+        ax.set_ylim(-factor_exp.abs().max()*1.1,factor_exp.abs().max()*1.1);
+        ax2.set_ylim(-risk_contr.abs().max()*1.1,risk_contr.abs().max()*1.1);
+        #ax.bar_label(rects1, padding=3)
+        #ax.bar_label(rects2, padding=3)
+
+        fig.tight_layout()
+
+        plt.show()
+
+        fig.savefig(path+fund+'StyleFactors_' +sector+'.png',format="png")
