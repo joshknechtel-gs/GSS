@@ -354,8 +354,12 @@ def SectorByFactorCharts(file,fund):
         fig, ax = plt.subplots(figsize=(20,10))
         ax2 = ax.twinx() 
 
-        rects1 = ax.bar(x - width/2, factor_exp, width, label='Active Factor Exposure')
-        rects2 = ax2.bar(x + width/2, risk_contr, width, label='Active Risk Contribution (bps right)', color='red',)
+        if fund != 'GSS':
+            rects1 = ax.bar(x - width/2, factor_exp, width, label='Active Factor Exposure')
+            rects2 = ax2.bar(x + width/2, risk_contr, width, label='Active Risk Contribution (bps right)', color='red',)
+        else:
+            rects1 = ax.bar(x - width/2, factor_exp, width, label='Factor Exposure')
+            rects2 = ax2.bar(x + width/2, risk_contr, width, label='Risk Contribution (bps right)', color='red',)
 
         ax.set_title(fund+': Style Factors within ' +sector,fontsize=25);
 
